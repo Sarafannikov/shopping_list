@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from models.models import User, Auth
+from models.models import User, Answer, Product, ListOfProducts
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
 app.mount('/static', StaticFiles(directory='static', html=True), name='static')
+
+# Пример продуктового листа
+productOne = Product(name='Молоко', quantity=2, position=1)
+productTwo = Product(name='Хлеб', quantity=1, position=2)
+productList = ListOfProducts(products=[productOne, productTwo])
 
 @app.get("/")
 async def root():
@@ -28,10 +33,14 @@ def get_user(user: User):
     return res
 
 
-@app.post("/auth")
-async def auth(logpas: Auth):
-    logpas = dict(logpas)
-    if logpas['login'] == '123' and logpas['password'] == '234':
-        return True
+@app.post("/auth/", response_model=Answer)
+async def auth(login, password: str):
+    if login == '123' and password == '234':
+        return {'status': 'ok', 'message': 'Вы успешно авторизованы'}
     else:
-        raise Exception('Неверный логин или пароль')
+        return {'status': 'error', 'message': 'Неверный логин или пароль'}
+
+
+@app.post('/list')
+async def get_product_list():
+    return productList
