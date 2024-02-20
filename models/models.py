@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 class User(BaseModel):
@@ -13,10 +13,14 @@ class Answer(BaseModel):
     message: str
 
 
-class Product(BaseModel):
+class ProductAdd(BaseModel):
     name: str
-    quantity: int | float
+    quantity: Optional[float] = None  # Optional - не обязательное поле
     position: int
+
+
+class Product(ProductAdd):
+    id: int
 
 
 class ListOfProducts(BaseModel):

@@ -11,8 +11,8 @@
     <h1>Sign In Form</h1>
   <div id="wrapper">
       <div id="signin">
-          <input type="text" id="user" name="login" placeholder="username" />
-          <input type="password" id="pass" name="password" placeholder="password" />
+          <input type="text" id="login" name="login" placeholder="username" />
+          <input type="password" id="password" name="password" placeholder="password" />
           <button type="submit" onclick="send()">&#xf0da;</button>
           <!--<p>forgot your password? <a href="#">click here</a></p>-->
       </div>
@@ -21,8 +21,8 @@
     async function send(){
 
         // получаем введеное в поле имя и возраст
-        const username = document.getElementById("user").value;
-        const userpass = document.getElementById("pass").value;
+        const username = document.getElementById("login").value;
+        const userpass = document.getElementById("password").value;
 
         // отправляем запрос
         const response = await fetch("/auth", {

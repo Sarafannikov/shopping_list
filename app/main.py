@@ -1,36 +1,30 @@
-from fastapi import FastAPI, Header
+from fastapi import FastAPI, Header, Depends
 from fastapi.responses import FileResponse
-from models.models import User, Answer, Product, ListOfProducts
+
+from database import create_tables, delete_tables
+from models.models import Answer, Product, ListOfProducts, ProductAdd
 from fastapi.staticfiles import StaticFiles
 from typing import Annotated
-from peewee import *
-import routers.create_db
+# from routers.create_db import Users
+import hashlib
+from contextlib import asynccontextmanager
+from routers.routers import router as user_router
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await delete_tables()
+    await create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.mount('/static', StaticFiles(directory='static', html=True), name='static')
 
-# Пример продуктового листа
-#productOne = Product(name='Молоко', quantity=2, position=1)
-#productTwo = Product(name='Хлеб', quantity=1, position=2)
-#roductList = ListOfProducts(products=[productOne, productTwo])
-
-
-@app.get("/")
-async def root():
-    return FileResponse('static/index.html')
-
-
-@app.post("/auth", response_model=Answer)
-async def auth(login, password: str):
-    if login == '123' and password == '234':
-        return {'status': 'ok', 'message': 'Вы успешно авторизованы'}
-    else:
-        return {'status': 'error', 'message': 'Неверный логин или пароль'}
+app.include_router(user_router)
 
 
 
 
-#app.post('/list')
-#async def get_product_list():
-    #return productList
+
+
