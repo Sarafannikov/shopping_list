@@ -13,15 +13,13 @@ class Answer(BaseModel):
     message: str
 
 
-class ProductAdd(BaseModel):
+class Product(BaseModel):
+    id: int
     name: str
     quantity: Optional[float] = None  # Optional - не обязательное поле
     position: int
 
 
-class Product(ProductAdd):
-    id: int
-
-
 class ListOfProducts(BaseModel):
-    products: List[Product]
+    id: int
+    user_id: int
