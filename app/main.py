@@ -23,9 +23,3 @@ app = FastAPI(lifespan=lifespan)
 app.mount('/static', StaticFiles(directory='static', html=True), name='static')
 
 app.include_router(user_router)
-
-
-
-
-
-

@@ -14,12 +14,11 @@ class Answer(BaseModel):
 
 
 class Product(BaseModel):
-    id: int
     name: str
     quantity: Optional[float] = None  # Optional - не обязательное поле
-    position: int
+    #position: int
+    list_id: int
 
 
 class ListOfProducts(BaseModel):
-    id: int
     user_id: int

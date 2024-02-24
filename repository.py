@@ -65,3 +65,11 @@ class ProductsRepository:
             result = await session.execute(query)
             product_models = result.scalars().all()
             return product_models
+
+    @classmethod
+    async def get_from_list(cls, id1):
+        async with new_session() as session:
+            query = select(ProductOrm).where(ProductOrm.list_id == id1)
+            result = await session.execute(query)
+            product_models = result.scalars().all()
+            return product_models
