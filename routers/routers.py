@@ -51,7 +51,12 @@ async def add_product_in_list(product: Annotated[Product, Depends()]):
     product_id = await ProductsRepository.add_product(product)
     return {'product': product_id}
 
-@router.post("/products")
-async def get_products_from_list(id1: int):
-    product_id = await ProductsRepository.get_from_list(id1)
+@router.post("/products_api")
+async def get_products_from_list(id: int):
+    product_id = await ProductsRepository.get_from_list(id)
     return {'product': product_id}
+
+
+@router.get("/products")
+async def root():
+    return FileResponse('static/productlist.html')

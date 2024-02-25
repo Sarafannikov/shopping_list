@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Product List</title>
+  <link rel="stylesheet" href="static/style.css">
+
+</head>
+
+<script>
+    async function get_products(){
+
+
+        // отправляем запрос
+        const response = await fetch("/products_api?id=2", {
+                method: "POST",
+                headers: {"Accept": "application/json" },
+                //body: 'id=2'
+            });
+            if (response.ok) {
+                const data = await response.json();
+            }
+            else
+                console.log(response);
+    }
+    let a = get_products;
+</script>
+
+<body>
+    <h1>Product List</h1>
+  <div id="wrapper">
+
+  </div>
+
+
+</body>
+</html>
