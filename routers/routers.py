@@ -13,6 +13,8 @@ router = APIRouter(
 )
 
 
+
+
 @router.get("/")
 async def root():
     return FileResponse('static/index.html')
@@ -58,5 +60,18 @@ async def get_products_from_list(id: int):
 
 
 @router.get("/products")
-async def root():
+async def products():
     return FileResponse('static/productlist.html')
+
+
+@router.post("/delete_poduct")
+async def deleteProduct(id: int):
+    product_id = await ProductsRepository.delete(id)
+    return product_id
+
+
+@router.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse('favicon.ico')
+
+

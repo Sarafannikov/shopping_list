@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from database import new_session, UserOrm, ProductListOrm, ProductOrm
 from models.models import User, ListOfProducts, Product
@@ -67,9 +67,17 @@ class ProductsRepository:
             return product_models
 
     @classmethod
-    async def get_from_list(cls, id1):
+    async def get_from_list(cls, id):
         async with new_session() as session:
-            query = select(ProductOrm).where(ProductOrm.list_id == id1)
+            query = select(ProductOrm).where(ProductOrm.list_id == id)
             result = await session.execute(query)
             product_models = result.scalars().all()
             return product_models
+
+    @classmethod
+    async def delete(cls, id):
+        async with new_session() as session:
+            query = delete(ProductOrm).where(ProductOrm.id == id)
+            result = await session.execute(query)
+            await session.commit()
+            return True

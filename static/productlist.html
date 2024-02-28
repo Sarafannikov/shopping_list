@@ -7,11 +7,10 @@
 
 </head>
 
+
 <script>
+    var b;
     async function get_products(){
-
-
-        // отправляем запрос
         const response = await fetch("/products_api?id=2", {
                 method: "POST",
                 headers: {"Accept": "application/json" },
@@ -19,15 +18,46 @@
             });
             if (response.ok) {
                 const data = await response.json();
+                data.product.forEach((element) => {
+                    var newDiv = document.createElement("div");
+                    newDiv.innerHTML = "<div style='text-align: center; color: white; padding: 10px'>" +
+                                        "<div id='"+element.id+"' style='display: inline-block; padding: 10px'>"+element.name+": "+element.quantity+"</div>" +
+                                        "<div onclick='deleteProduct(element.id)' style='display: inline-block;'>DELETE</div>" +
+                                      "</div>"
+                    ;
+                    my_div = document.getElementById("wrapper");
+                    document.body.insertBefore(newDiv, my_div);
+                });
+                document.getElementById("wrapper").textContent = data.message;
             }
             else
                 console.log(response);
     }
-    let a = get_products;
+
+
+    async function deleteProduct(){
+        const response = await fetch(""
+
+        );
+
+
+    }
+
+
+
+
+    get_products();
 </script>
 
 <body>
     <h1>Product List</h1>
+    <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
   <div id="wrapper">
 
   </div>
