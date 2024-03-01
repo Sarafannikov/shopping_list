@@ -59,9 +59,9 @@ async def get_products_from_list(id: int):
     return {'product': product_id}
 
 
-@router.get("/products")
-async def products():
-    return FileResponse('static/productlist.html')
+@router.get("/products/")
+async def products(list_id):
+    return FileResponse('static/products.html')
 
 
 @router.post("/delete_poduct")
