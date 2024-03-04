@@ -7,10 +7,10 @@ from typing import Annotated
 
 from repository import UserRepository, ProductListRepository, ProductsRepository
 import hashlib
+import app.jwtClass
 
-router = APIRouter(
-    tags=["Апишечка"]
-)
+
+router = APIRouter()
 
 
 
@@ -28,6 +28,19 @@ async def register(user: Annotated[User, Depends()]):
     except sqlalchemy.exc.IntegrityError:
         return {'ok': False, 'message': "Данный логин уже занят"}
     return {'ok': True, 'user_id': user_id}
+
+
+@router.post("/auth")
+async def login(user: Annotated[User, Depends()]):
+    password = hashlib.sha256(user.password.encode()).hexdigest()
+    check = await UserRepository.get_user(user.login)
+    if check == []:
+        return {'ok': False, 'message': 'Пользователь не найден'}
+    if password == check.password:
+        return {"access_token": app.jwtClass.create_jwt_token({"sub": user.login}), "token_type": "bearer"}
+    return {'ok': False, 'message': 'Что то пошло не так'}
+
+
 
 
 @router.post("/users")
@@ -49,7 +62,7 @@ async def add_productlist(productlist: Annotated[ListOfProducts, Depends()]):
 
 
 @router.post("/add_product_in_list")
-async def add_product_in_list(product: Annotated[Product, Depends()]):
+async def add_product_in_list(product: Annotated[Product, ''] = Depends(app.jwtClass.get_user_from_token)):
     product_id = await ProductsRepository.add_product(product)
     return {'product': product_id}
 

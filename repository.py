@@ -24,6 +24,14 @@ class UserRepository:
             users_models = result.scalars().all()
             return users_models
 
+    @classmethod
+    async def get_user(cls, login):
+        async with new_session() as session:
+            query = select(UserOrm).where(UserOrm.login == login)
+            result = await session.execute(query)
+            product_models = result.scalars().one()
+            return product_models
+
 
 class ProductListRepository:
     @classmethod
