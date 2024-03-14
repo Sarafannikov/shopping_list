@@ -9,10 +9,7 @@ from repository import UserRepository, ProductListRepository, ProductsRepository
 import hashlib
 import app.jwtClass
 
-
 router = APIRouter()
-
-
 
 
 @router.get("/")
@@ -37,10 +34,9 @@ async def login(user: Annotated[User, Depends()]):
     if check == []:
         return {'ok': False, 'message': 'Пользователь не найден'}
     if password == check.password:
-        return {"access_token": app.jwtClass.create_jwt_token({"sub": user.login}), "token_type": "bearer"}
-    return {'ok': False, 'message': 'Что то пошло не так'}
-
-
+        return {"access_token": app.jwtClass.create_jwt_token({"sub": user.login, 'id': check.id}),
+                "token_type": "bearer"}
+    return {'ok': False, 'message': 'Неверный логин или пароль'}
 
 
 @router.post("/users")
@@ -56,15 +52,20 @@ async def get_productlist():
 
 
 @router.post("/add_productlist")
-async def add_productlist(productlist: Annotated[ListOfProducts, Depends()]):
+async def add_productlist(productlist: Annotated[ListOfProducts, Depends()], user: User = Depends(app.jwtClass.get_user_from_token)):
     productlist_id = await ProductListRepository.add_productlist(productlist)
     return {'productlist_id': productlist_id}
 
 
 @router.post("/add_product_in_list")
-async def add_product_in_list(product: Annotated[Product, ''] = Depends(app.jwtClass.get_user_from_token)):
-    product_id = await ProductsRepository.add_product(product)
-    return {'product': product_id}
+async def add_product_in_list(product: Annotated[Product, Depends()], user: User = Depends(app.jwtClass.get_user_from_token)):
+    print(user)
+    if user:
+        product_id = await ProductsRepository.add_product(product)
+        return {'product': product_id}
+    else:
+        return {'error': 'Косяк с авторизацией'}
+
 
 @router.post("/products_api")
 async def get_products_from_list(id: int):
@@ -77,7 +78,7 @@ async def products(list_id):
     return FileResponse('static/products.html')
 
 
-@router.post("/delete_poduct")
+@router.post("/delete_product")
 async def deleteProduct(id: int):
     product_id = await ProductsRepository.delete(id)
     return product_id
@@ -86,5 +87,3 @@ async def deleteProduct(id: int):
 @router.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse('favicon.ico')
-
-
