@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy import select, delete
 
 from database import new_session, UserOrm, ProductListOrm, ProductOrm
@@ -29,8 +30,12 @@ class UserRepository:
         async with new_session() as session:
             query = select(UserOrm).where(UserOrm.login == login)
             result = await session.execute(query)
-            product_models = result.scalars().one()
-            return product_models
+            try:
+                product_models = result.scalars().one()
+                return product_models
+            except sqlalchemy.exc.NoResultFound:
+                return []
+
 
 
 class ProductListRepository:

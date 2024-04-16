@@ -28,13 +28,13 @@ async def register(user: Annotated[User, Depends()]):
 
 
 @router.post("/auth")
-async def login(user: Annotated[User, Depends()]):
-    password = hashlib.sha256(user.password.encode()).hexdigest()
-    check = await UserRepository.get_user(user.login)
+async def auth(login: str, password: str):
+    password = hashlib.sha256(password.encode()).hexdigest()
+    check = await UserRepository.get_user(login)
     if check == []:
         return {'ok': False, 'message': 'Пользователь не найден'}
     if password == check.password:
-        return {"access_token": app.jwtClass.create_jwt_token({"sub": user.login, 'id': check.id}),
+        return {"access_token": app.jwtClass.create_jwt_token({"sub": login, 'id': check.id}),
                 "token_type": "bearer"}
     return {'ok': False, 'message': 'Неверный логин или пароль'}
 
@@ -52,13 +52,15 @@ async def get_productlist():
 
 
 @router.post("/add_productlist")
-async def add_productlist(productlist: Annotated[ListOfProducts, Depends()], user: User = Depends(app.jwtClass.get_user_from_token)):
+async def add_productlist(user: User = Depends(app.jwtClass.get_user_from_token)):
+    productlist = ListOfProducts(**{'user_id': user})
     productlist_id = await ProductListRepository.add_productlist(productlist)
     return {'productlist_id': productlist_id}
 
 
 @router.post("/add_product_in_list")
-async def add_product_in_list(product: Annotated[Product, Depends()], user: User = Depends(app.jwtClass.get_user_from_token)):
+async def add_product_in_list(product: Annotated[Product, Depends()],
+                              user: User = Depends(app.jwtClass.get_user_from_token)):
     print(user)
     if user:
         product_id = await ProductsRepository.add_product(product)
